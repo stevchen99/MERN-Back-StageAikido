@@ -21,10 +21,14 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api/stages', stageRoutes);
 
+// ✅ Initialize Swagger BEFORE starting the server
+// This ensures the route is registered correctly on Vercel
+setupSwagger(app, PORT);
+
 // Start Server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    
-    // ✅ Initialize Swagger (pass app and port)
-    setupSwagger(app, PORT);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
+
+// Export app for Vercel
+module.exports = app;

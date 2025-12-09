@@ -1,36 +1,38 @@
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
-// Function to setup Swagger
 const setupSwagger = (app, port) => {
     
-    // Swagger Configuration
+    // 1. Define the correct server URL
+    // If running on Vercel, use the production URL. If local, use localhost.
+    // We use a relative path "/" so it adapts to whatever domain you are on.
+    const serverUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://mern-back-stage-aikido.vercel.app' 
+        : `http://localhost:${port}`;
+
     const swaggerOptions = {
         definition: {
             openapi: '3.0.0',
             info: {
                 title: 'Stage Manager API',
                 version: '1.0.0',
-                description: 'API to manage stages (Date, Place, Name, Cost, Dept)',
+                description: 'API to manage stages',
             },
             servers: [
-                {
-                    url: `http://localhost:${port}`,
-                },
+                { url: serverUrl } // ✅ Dynamic URL
             ],
-            // Schema Definition (kept here to avoid resolver errors)
             components: {
                 schemas: {
                     StageEntry: {
                         type: 'object',
                         required: ['place', 'stageName', 'cost', 'dept'],
                         properties: {
-                            id: { type: 'string', description: 'Auto-generated ID' },
-                            date: { type: 'string', format: 'date-time', description: 'Date of stage' },
-                            place: { type: 'string', maxLength: 50, description: 'Location' },
-                            stageName: { type: 'string', maxLength: 50, description: 'Name of stage' },
-                            cost: { type: 'number', description: 'Cost in Euro' },
-                            dept: { type: 'string', minLength: 2, maxLength: 2, description: 'Dept Code' }
+                            id: { type: 'string' },
+                            date: { type: 'string', format: 'date-time' },
+                            place: { type: 'string' },
+                            stageName: { type: 'string' },
+                            cost: { type: 'number' },
+                            dept: { type: 'string' }
                         },
                         example: {
                             date: "2023-10-27T10:00:00.000Z",
@@ -43,17 +45,31 @@ const setupSwagger = (app, port) => {
                 }
             }
         },
-        // Location of files containing endpoints
+        // ⚠️ NOTE: On Vercel, reading './routes/*.js' can sometimes fail 
+        // because the file structure changes. If your docs are empty, 
+        // this is the next thing to fix.
         apis: ['./routes/*.js'], 
     };
 
-    // Initialize Swagger
     const swaggerDocs = swaggerJsDoc(swaggerOptions);
     
-    // Create the route
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    // 2. CSS & JS CDN Fix for Vercel
+    const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+
+    app.use(
+        '/api-docs', 
+        swaggerUi.serve, 
+        swaggerUi.setup(swaggerDocs, {
+            customCssUrl: CSS_URL,
+            customSiteTitle: "Stage Manager API Docs",
+            customJs: [
+                "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui-bundle.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui-standalone-preset.js",
+            ]
+        })
+    );
     
-    console.log(`📄 Swagger UI available at http://localhost:${port}/api-docs`);
+    console.log(`📄 Swagger configured for ${serverUrl}`);
 };
 
 module.exports = setupSwagger;

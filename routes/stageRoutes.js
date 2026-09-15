@@ -143,13 +143,15 @@ router.get('/:id', async (req, res) => {
  *               $ref: '#/components/schemas/StageEntry'
  *       404:
  *         description: Stage not found
+ *       400:
+ *         description: Validation error
  *       500:
  *         description: Server error
  */
 router.put('/:id', async (req, res) => {
     try {
         // { new: true } returns the updated document
-        // { runValidators: true } ensures rules like "maxLength" are checked again
+        // { runValidators: true } ensures rules like "maxLength" and "required" are checked again
         const updatedEntry = await StageEntry.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -196,7 +198,6 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
 
 // ==========================================
 // IMPORT MULTIPLE (BATCH / SEED)

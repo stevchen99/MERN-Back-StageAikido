@@ -23,14 +23,45 @@ const setupSwagger = (app, port) => {
                 schemas: {
                     StageEntry: {
                         type: 'object',
-                        required: ['place', 'stageName', 'cost', 'dept'],
+                        required: ['address', 'stageName', 'cost', 'dept'],
                         properties: {
-                            id: { type: 'string' },
-                            date: { type: 'string', format: 'date-time' },
-                            place: { type: 'string' },
-                            stageName: { type: 'string' },
-                            cost: { type: 'number' },
-                            dept: { type: 'string' }
+                            _id: { 
+                                type: 'string', 
+                                description: 'Auto-generated MongoDB ID' 
+                            },
+                            date: { 
+                                type: 'string', 
+                                format: 'date-time',
+                                example: '2026-09-15T14:30:00.000Z'
+                            },
+                            address: { 
+                                type: 'string', 
+                                maxLength: 150, 
+                                description: 'Full French address (street, postal code, city)',
+                                example: '10 Rue de la Paix, 75002 Paris' 
+                            },
+                            link: { 
+                                type: 'string', 
+                                description: 'URL link to external stage information',
+                                example: 'https://example.com/stage-info' 
+                            },
+                            stageName: { 
+                                type: 'string', 
+                                maxLength: 50,
+                                example: 'Stage Aikido National' 
+                            },
+                            cost: { 
+                                type: 'number', 
+                                minimum: 0,
+                                example: 45.50 
+                            },
+                            dept: { 
+                                type: 'string', 
+                                minLength: 2, 
+                                maxLength: 2, 
+                                description: 'Two-character department code',
+                                example: '75' 
+                            }
                         }
                     }
                 }

@@ -6,10 +6,22 @@ const stageEntrySchema = new mongoose.Schema({
         default: Date.now,
         required: true
     },
-    place: {
+    address: {
         type: String,
-        maxLength: 50,
-        required: true
+        maxLength: 150, // Fits a standard French address (street, postal code, city)
+        required: true,
+        trim: true
+    },
+    link: {
+        type: String,
+        trim: true,
+        validate: {
+            validator: function(v) {
+                // Optional: basic URL format check (accepts empty or valid URLs)
+                return !v || /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/.test(v);
+            },
+            message: 'Please provide a valid URL address.'
+        }
     },
     stageName: {
         type: String,
@@ -17,7 +29,7 @@ const stageEntrySchema = new mongoose.Schema({
         required: true
     },
     cost: {
-        type: Number, // Mongoose handles decimals via Number
+        type: Number,
         required: true,
         min: 0
     },
@@ -25,8 +37,8 @@ const stageEntrySchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 2,
-        maxLength: 2, // Forces exactly 2 characters (e.g., '75', 'NY')
-        uppercase: true // Auto convert to uppercase
+        maxLength: 2,
+        uppercase: true
     }
 });
 

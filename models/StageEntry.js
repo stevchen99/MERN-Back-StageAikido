@@ -39,7 +39,24 @@ const stageEntrySchema = new mongoose.Schema({
         minLength: 2,
         maxLength: 2,
         uppercase: true
-    }
+    },
+    // Enseignants field integrated directly into the schema
+    enseignants: [
+        {
+            firstName: {
+                type: String,
+                required: true,
+                trim: true,
+                maxLength: 50
+            },
+            lastName: {
+                type: String,
+                required: true,
+                trim: true,
+                maxLength: 50
+            }
+        }
+    ]
 });
 
 module.exports = mongoose.model('StageEntry', stageEntrySchema);

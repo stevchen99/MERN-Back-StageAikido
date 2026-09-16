@@ -4,6 +4,54 @@ const StageEntry = require('../models/StageEntry');
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     EnseignantInput:
+ *       type: object
+ *       required:
+ *         - firstName
+ *         - lastName
+ *       properties:
+ *         firstName:
+ *           type: string
+ *           example: Jean
+ *         lastName:
+ *           type: string
+ *           example: Dupont
+ *     StageEntryInput:
+ *       type: object
+ *       required:
+ *         - address
+ *         - stageName
+ *         - cost
+ *         - dept
+ *       properties:
+ *         date:
+ *           type: string
+ *           format: date-time
+ *         address:
+ *           type: string
+ *           example: "123 Rue de Paris, 75001 Paris"
+ *         link:
+ *           type: string
+ *           example: "https://example.com"
+ *         stageName:
+ *           type: string
+ *           example: "Stage Judo"
+ *         cost:
+ *           type: number
+ *           example: 50
+ *         dept:
+ *           type: string
+ *           example: "75"
+ *         enseignants:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/EnseignantInput'
+ */
+
+/**
+ * @swagger
  * tags:
  *   name: Stages
  *   description: The stage managing API
@@ -24,14 +72,10 @@ const StageEntry = require('../models/StageEntry');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/StageEntry'
+ *             $ref: '#/components/schemas/StageEntryInput'
  *     responses:
  *       201:
  *         description: The stage was successfully created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/StageEntry'
  *       400:
  *         description: Validation error
  */
@@ -58,12 +102,6 @@ router.post('/', async (req, res) => {
  *     responses:
  *       200:
  *         description: The list of stages
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/StageEntry'
  */
 router.get('/', async (req, res) => {
     try {
@@ -94,10 +132,6 @@ router.get('/', async (req, res) => {
  *     responses:
  *       200:
  *         description: The stage description by id
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/StageEntry'
  *       404:
  *         description: Stage not found
  */
@@ -133,14 +167,10 @@ router.get('/:id', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/StageEntry'
+ *             $ref: '#/components/schemas/StageEntryInput'
  *     responses:
  *       200:
  *         description: The stage was updated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/StageEntry'
  *       404:
  *         description: Stage not found
  *       400:
@@ -150,8 +180,6 @@ router.get('/:id', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
     try {
-        // { new: true } returns the updated document
-        // { runValidators: true } ensures rules like "maxLength" and "required" are checked again
         const updatedEntry = await StageEntry.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -216,22 +244,15 @@ router.delete('/:id', async (req, res) => {
  *           schema:
  *             type: array
  *             items:
- *               $ref: '#/components/schemas/StageEntry'
+ *               $ref: '#/components/schemas/StageEntryInput'
  *     responses:
  *       201:
  *         description: All stages successfully imported
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/StageEntry'
  *       400:
  *         description: Error importing data
  */
 router.post('/seed', async (req, res) => {
     try {
-        // req.body must be an ARRAY of objects
         const savedEntries = await StageEntry.insertMany(req.body);
         res.status(201).json(savedEntries);
     } catch (err) {
